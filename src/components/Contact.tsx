@@ -49,10 +49,10 @@ export default function Contact() {
           message: '' 
         });
 
-        // After successful submit: clear fields and show success state for exactly 5 seconds
+        // After successful submit: clear fields and show success state for exactly 3 seconds
         setTimeout(() => {
           setIsSubmitted(false);
-        }, 5000);
+        }, 3000);
       } else {
         throw new Error(result.error || "Something went wrong.");
       }
@@ -149,7 +149,7 @@ export default function Contact() {
                   </div>
                   <h3 className="font-display text-2xl font-bold text-white mb-3">Transmission Complete!</h3>
                   <div className="text-sm text-[#25D366] max-w-sm leading-relaxed mb-8 font-medium">
-                    <p>✅ Message sent! Check your email for confirmation.</p>
+                    <p>✅ Message sent! We'll reply within 24 hours.</p>
                   </div>
 
                   <button
