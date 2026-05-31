@@ -3,9 +3,54 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Google AI Studio App</title>
+    <!-- Dynamic Initial Page Title -->
+    <title>Khabbab | Premium Freelance Web & Automation Specialist</title>
+    <!-- Premium Glowing Lightning Developer SVG Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%230A0F1E'/%3E%3Cpath d='M35 50 L55 25 L50 48 L65 48 L45 75 L50 52 Z' fill='%2325D366' filter='drop-shadow(0px 0px 6px %2325D366)'/%3E%3Cpath d='M30 45 L40 50 L30 55' fill='none' stroke='%235B5FEF' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+    <style>
+      /* Self-contained CSS Preloader animation */
+      @keyframes spin-outer {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      @keyframes spin-inner {
+        0% { transform: rotate(360deg); }
+        100% { transform: rotate(0deg); }
+      }
+      @keyframes pulse-text {
+        0%, 100% { opacity: 0.5; transform: scale(0.98); }
+        50% { opacity: 1; transform: scale(1); }
+      }
+      @keyframes pulse-glow {
+        0%, 100% { box-shadow: 0 0 15px rgba(37, 211, 102, 0.2); }
+        50% { box-shadow: 0 0 30px rgba(37, 211, 102, 0.5); }
+      }
+    </style>
   </head>
-  <body>
+  <body style="margin: 0; background-color: #0A0F1E;">
+    <!-- Beautiful Dark Luxury Preloading Screen -->
+    <div id="preloader" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #0A0F1E; z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s ease, visibility 0.5s ease; pointer-events: all; overflow: hidden;">
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 24px;">
+        <!-- Glowing Double Ring Spinner -->
+        <div style="position: relative; width: 90px; height: 90px; display: flex; align-items: center; justify-content: center;">
+          <div style="box-sizing: border-box; position: absolute; width: 100%; height: 100%; border: 3px solid transparent; border-top-color: #5B5FEF; border-left-color: #5B5FEF; border-radius: 50%; animation: spin-outer 1s linear infinite;"></div>
+          <div style="box-sizing: border-box; position: absolute; width: 80%; height: 80%; border: 3px solid transparent; border-bottom-color: #25D366; border-right-color: #25D366; border-radius: 50%; animation: spin-inner 1s linear infinite;"></div>
+          <!-- Centered Glowing Spark Node -->
+          <div style="width: 38px; height: 38px; background-color: #111827; border: 2px solid #25D366; border-radius: 50%; display: flex; align-items: center; justify-content: center; animation: pulse-glow 1.5s ease-in-out infinite;">
+            <span style="font-size: 18px; line-height: 1; filter: drop-shadow(0 0 2px #25D366);">⚡</span>
+          </div>
+        </div>
+        <div style="text-align: center;">
+          <div style="font-family: system-ui, -apple-system, sans-serif; color: #FFFFFF; font-size: 14px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; animation: pulse-text 1.5s ease-in-out infinite; margin-bottom: 6px;">
+            FREELANCE<span style="color: #25D366;">AGENCY</span>
+          </div>
+          <div style="font-family: 'Courier New', monospace; color: #94A3B8; font-size: 11px; letter-spacing: 1px;">
+            Loading pristine interface...
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

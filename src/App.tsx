@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import Navbar from './components/Navbar';
 import FloatingWhatsApp from './components/FloatingWhatsApp';
 import Hero from './components/Hero';
@@ -10,6 +11,63 @@ import Contact from './components/Contact';
 import Footer from './components/Footer';
 
 export default function App() {
+  useEffect(() => {
+    // 1. Fade out the HTML preloader beautifully
+    const preloader = document.getElementById('preloader');
+    if (preloader) {
+      const timer = setTimeout(() => {
+        preloader.style.opacity = '0';
+        preloader.style.visibility = 'hidden';
+        // Remove completely after fading out to preserve performance
+        const removeTimer = setTimeout(() => {
+          preloader.remove();
+        }, 500);
+        return () => clearTimeout(removeTimer);
+      }, 800); // Trigger beautifully once DOM loads
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  useEffect(() => {
+    // 2. Dynamic Title Mapping based on current scrolling visual section
+    const sectionTitles: { [key: string]: string } = {
+      'home': 'Khabbab | Expert WordPress & Web Automation Specialist',
+      'services': 'Specialized Services | Premium Web & WhatsApp Solutions',
+      'demo': 'Interactive Demo | Chatbot Console Simulator',
+      'why-choose-us': 'Why Choose Us | Proven Scaling Results',
+      'portfolio': 'Our Masterful Portfolio | Selected Accomplished Works',
+      'testimonials': 'Global Client Testimonials & Project Reviews',
+      'contact': 'Initiate Project Brief | Scale Your Business Today'
+    };
+
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + window.innerHeight / 3;
+      
+      let activeSectionId = 'home';
+      for (const sectionId of Object.keys(sectionTitles)) {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          const elementTop = rect.top + window.scrollY;
+          if (scrollPosition >= elementTop) {
+            activeSectionId = sectionId;
+          }
+        }
+      }
+
+      const targetTitle = sectionTitles[activeSectionId];
+      if (targetTitle && document.title !== targetTitle) {
+        document.title = targetTitle;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    // Trigger initially
+    handleScroll();
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#0A0F1E] text-white flex flex-col font-sans selection:bg-[#25D366]/30 selection:text-white antialiased relative">
       {/* Background radial overlays / Dark luxury glow mesh */}

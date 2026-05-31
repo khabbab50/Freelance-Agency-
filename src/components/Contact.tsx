@@ -2,11 +2,16 @@ import React, { useState } from 'react';
 import { MessageSquare, Mail, Send, Github, Twitter, Linkedin, Instagram, ArrowRight, CheckCircle } from 'lucide-react';
 
 export default function Contact() {
-  const [formData, setFormData] = useState({ name: '', email: '', choice: 'wordpress', message: '', web3Key: '' });
+  const [formData, setFormData] = useState({ 
+    name: '', 
+    email: '', 
+    choice: 'wordpress', 
+    budget: '$1000 - $3000', 
+    message: '' 
+  });
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [successMode, setSuccessMode] = useState<'web3forms' | 'mailto' | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -15,26 +20,19 @@ export default function Contact() {
     setIsSubmitting(true);
     setErrorMessage('');
 
-    // If a Web3Forms access key is provided, use AJAX. Otherwise we fallback elegantly.
-    const keyToUse = formData.web3Key.trim() || "bcb2714c-1d0b-4bd4-9a84-e1d13db68351"; // Default mockup fallback key
-
     try {
-      const response = await fetch("https://api.web3forms.com/submit", {
+      const response = await fetch("/api/send-email", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json"
         },
         body: JSON.stringify({
-          access_key: keyToUse,
-          subject: `⚡ [Agency Project Brief] From: ${formData.name}`,
-          from_name: "Freelance Agency Landing Page",
-          replyto: formData.email,
-          to: "khabbab.dev@gmail.com",
           name: formData.name,
           email: formData.email,
-          requirement: formData.choice.toUpperCase(),
-          message: formData.message || "No notes provided"
+          projectType: formData.choice,
+          budget: formData.budget,
+          message: formData.message
         })
       });
 
@@ -42,47 +40,28 @@ export default function Contact() {
 
       if (response.ok && result.success) {
         setIsSubmitted(true);
-        setSuccessMode('web3forms');
-        setFormData({ name: '', email: '', choice: 'wordpress', message: '', web3Key: formData.web3Key });
+        // Clear the form fields as requested
+        setFormData({ 
+          name: '', 
+          email: '', 
+          choice: 'wordpress', 
+          budget: '$1000 - $3000', 
+          message: '' 
+        });
+
+        // After successful submit: clear fields and show success state for exactly 5 seconds
+        setTimeout(() => {
+          setIsSubmitted(false);
+        }, 5000);
       } else {
-        // If API key is invalid/missing, fallback to mailto elegantly so they 100% get the message!
-        triggerMailtoFallback();
+        throw new Error(result.error || "Something went wrong.");
       }
     } catch (error: any) {
-      console.warn("API submission failed, using fail-safe Mailto client trigger...", error);
-      triggerMailtoFallback();
+      console.error("Email API submission failed:", error);
+      setErrorMessage("❌ Something went wrong. Please try WhatsApp instead.");
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const triggerMailtoFallback = () => {
-    const emailSubject = `⚡ [Agency Brief] New Project Inquiry - ${formData.name}`;
-    const emailBody = `আসসালামু আলাইকুম,
-
-আপনার এজেন্সি ওয়েবসাইটে একটি নতুন Project Brief সাবমিট করা হয়েছে। বিবরণ নিচে দেওয়া হলো:
-
-=====================================
-📋 CLIENT INFO & INQUIRY DETAILS
-=====================================
-👤 Client Name: ${formData.name}
-✉️ Client Email: ${formData.email}
-🛠️ Core Requirement: ${formData.choice.toUpperCase()}
-
-💬 PROJECT NOTES / MESSAGE:
--------------------------------------
-${formData.message || "No custom notes provided."}
-
-=====================================
-💡 Generated from Freelance Agency Landing Page.
-=====================================`;
-
-    const mailtoLink = `mailto:khabbab.dev@gmail.com?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
-    window.location.href = mailtoLink;
-    
-    setIsSubmitted(true);
-    setSuccessMode('mailto');
-    setFormData({ name: '', email: '', choice: 'wordpress', message: '', web3Key: formData.web3Key });
   };
 
   return (
@@ -131,7 +110,7 @@ ${formData.message || "No custom notes provided."}
                 <div className="bg-white/5 p-1.5 rounded-full border border-white/10">
                   <Mail className="w-5 h-5" />
                 </div>
-                <span>Send a Message</span>
+                <span>Send an Email Directly</span>
               </a>
             </div>
 
@@ -140,8 +119,8 @@ ${formData.message || "No custom notes provided."}
               <p className="text-xs uppercase tracking-widest text-white/40 font-mono mb-4">Find us on socials</p>
               <div className="flex gap-4">
                 {[
-                  { icon: <Twitter className="w-5 h-5 animate-pulse" />, link: 'https://twitter.com' },
-                  { icon: <Linkedin className="w-5 h-5 font-bold" />, link: 'https://linkedin.com' },
+                  { icon: <Twitter className="w-5 h-5" />, link: 'https://twitter.com' },
+                  { icon: <Linkedin className="w-5 h-5" />, link: 'https://linkedin.com' },
                   { icon: <Github className="w-5 h-5" />, link: 'https://github.com' },
                   { icon: <Instagram className="w-5 h-5" />, link: 'https://instagram.com' }
                 ].map((social, index) => (
@@ -169,59 +148,22 @@ ${formData.message || "No custom notes provided."}
                     <CheckCircle className="w-8 h-8" />
                   </div>
                   <h3 className="font-display text-2xl font-bold text-white mb-3">Transmission Complete!</h3>
-                  
-                  {successMode === 'web3forms' ? (
-                    <div className="text-sm text-[#94A3B8] max-w-sm leading-relaxed mb-8">
-                      <p className="mb-2 text-[#25D366] font-medium">⚡ Web3Forms এর মাধ্যমে মেসেজ সফলভাবে পাঠানো হয়েছে!</p>
-                      <p>আপনার ইমেইল <strong className="text-white">khabbab.dev@gmail.com</strong> চেক করুন। আপনার সাবমিশনটি সরাসরি চলে গেছে।</p>
-                    </div>
-                  ) : (
-                    <div className="text-sm text-[#94A3B8] max-w-sm leading-relaxed mb-8">
-                      <p className="mb-2 text-[#5B5FEF] font-medium">✉️ Mail Client এর মাধ্যমে মেসেজ পাঠানো হয়েছে!</p>
-                      <p>নিরাপদ ব্যাকআপ হিসেবে আপনার ব্রাউজারের মেইল ক্লায়েন্ট ড্রাফটটি ওপেন করেছে। অনুগ্রহ করে মেইলটি সেন্ড করুন।</p>
-                    </div>
-                  )}
+                  <div className="text-sm text-[#25D366] max-w-sm leading-relaxed mb-8 font-medium">
+                    <p>✅ Message sent! Check your email for confirmation.</p>
+                  </div>
 
                   <button
                     onClick={() => setIsSubmitted(false)}
                     className="px-6 py-2.5 bg-white/5 hover:bg-white/10 text-white rounded-xl text-xs font-mono border border-white/10 transition-colors"
                   >
-                    Send Another message
+                    Send Another Message
                   </button>
                 </div>
               ) : (
                 <form id="contact-form" onSubmit={handleSubmit} className="flex flex-col gap-6">
                   <div className="text-left mb-2">
                     <h3 className="font-display text-xl font-bold text-white mb-1">Kickstart Your Project</h3>
-                    <p className="text-xs text-[#94A3B8]">তথ্যগুলো দিয়ে প্রজেক্ট ব্রিফ সাবমিট করুন। সরাসরি ইমেইলে চলে যাবে।</p>
-                  </div>
-
-                  {/* Web3Forms Access Key Option */}
-                  <div className="p-4 rounded-xl bg-white/[0.02] border border-white/5 flex flex-col gap-2">
-                    <div className="flex justify-between items-center">
-                      <label className="text-xs font-mono text-[#25D366] uppercase tracking-wider" htmlFor="form-key">
-                        Web3Forms Key (ঐচ্ছিক)
-                      </label>
-                      <a 
-                        href="https://web3forms.com/#start" 
-                        target="_blank" 
-                        rel="noreferrer" 
-                        className="text-[10px] text-[#5B5FEF] underline hover:text-[#7679f2]"
-                      >
-                        ফ্রি কি (Key) নিন ↗
-                      </a>
-                    </div>
-                    <input
-                      id="form-key"
-                      type="text"
-                      className="w-full bg-[#0A0F1E] border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-white/20 focus:outline-none focus:border-[#25D366] transition-colors"
-                      placeholder="পুট করুন (ফাঁকা রাখলে মেইল ড্রাইভার দিয়ে যাবে)"
-                      value={formData.web3Key}
-                      onChange={(e) => setFormData({ ...formData, web3Key: e.target.value })}
-                    />
-                    <p className="text-[10px] leading-relaxed text-slate-400">
-                      💡 আপনি চাইলে <a href="https://web3forms.com/" target="_blank" rel="noreferrer" className="text-white hover:underline">Web3Forms.com</a> এ আপনার ইমেইল দিয়ে ২ সেকেন্ডে একটি ফ্রি Access Key নিয়ে এখানে বসাতে পারেন। অন্যথায়, এটি স্বয়ংক্রিয়ভাবে মেইল ক্লায়েন্ট ব্যবহার করবে।
-                    </p>
+                    <p className="text-xs text-[#94A3B8]">Submit the project brief with the information. It will go directly to your email.</p>
                   </div>
 
                   {/* Name field */}
@@ -257,25 +199,51 @@ ${formData.message || "No custom notes provided."}
                   </div>
 
                   {/* Specialty selector dropdown */}
-                  <div className="flex flex-col gap-2">
-                    <label className="text-xs font-mono text-[#94A3B8] uppercase tracking-wider" htmlFor="form-service">
-                      Core Requirement
-                    </label>
-                    <div className="relative">
-                      <select
-                        id="form-service"
-                        value={formData.choice}
-                        onChange={(e) => setFormData({ ...formData, choice: e.target.value })}
-                        className="w-full bg-[#111827] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#5B5FEF] transition-colors appearance-none cursor-pointer"
-                      >
-                        <option value="wordpress">Premium WordPress Development</option>
-                        <option value="whatsapp">WhatsApp Business API Integration</option>
-                        <option value="tidio">Tidio Chatbot &amp; CRM Automation</option>
-                        <option value="all">Full Digital Scaling Ecosystem (Combo)</option>
-                      </select>
-                      {/* Arrow */}
-                      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/40">
-                        ▼
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="flex flex-col gap-2">
+                      <label className="text-xs font-mono text-[#94A3B8] uppercase tracking-wider" htmlFor="form-service">
+                        Core Requirement
+                      </label>
+                      <div className="relative">
+                        <select
+                          id="form-service"
+                          value={formData.choice}
+                          onChange={(e) => setFormData({ ...formData, choice: e.target.value })}
+                          className="w-full bg-[#111827] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#5B5FEF] transition-colors appearance-none cursor-pointer"
+                        >
+                          <option value="wordpress">Premium WordPress Development</option>
+                          <option value="whatsapp">WhatsApp Business API Integration</option>
+                          <option value="tidio">Tidio Chatbot &amp; CRM Automation</option>
+                          <option value="all">Full Digital Scaling Ecosystem (Combo)</option>
+                        </select>
+                        {/* Arrow */}
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/40 text-xs">
+                          ▼
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Budget Range Selector */}
+                    <div className="flex flex-col gap-2">
+                      <label className="text-xs font-mono text-[#94A3B8] uppercase tracking-wider" htmlFor="form-budget">
+                        Budget Range
+                      </label>
+                      <div className="relative">
+                        <select
+                          id="form-budget"
+                          value={formData.budget}
+                          onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+                          className="w-full bg-[#111827] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#5B5FEF] transition-colors appearance-none cursor-pointer"
+                        >
+                          <option value="$500 - $1000">$500 - $1,000 USD</option>
+                          <option value="$1000 - $3000">$1,000 - $3,000 USD</option>
+                          <option value="$3000 - $5000">$3,000 - $5,000 USD</option>
+                          <option value="$5000+">$5,000+ USD</option>
+                        </select>
+                        {/* Arrow */}
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/40 text-xs">
+                          ▼
+                        </div>
                       </div>
                     </div>
                   </div>

@@ -105,7 +105,7 @@ export default function Navbar() {
 
         <div className="mt-8 flex flex-col gap-4">
           <a
-            href="https://wa.me/1234567890"
+            href="https://wa.me/+8801733212051"
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => setIsOpen(false)}
